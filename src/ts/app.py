@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-
-"""The terminal service."""
-
 import terminado
 from tornado import web
 
