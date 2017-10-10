@@ -1,3 +1,4 @@
+BASE=ubuntu:lts
 LXC=/snap/bin/lxc
 INSTANCE=termserver-$(shell date +'%s')
 IMAGE=termserver.tar.gz
@@ -13,7 +14,7 @@ image:
 	snap install lxd
 
 	# Starting the LXC instance.
-	$(LXC) launch ubuntu:16.04 $(INSTANCE)
+	$(LXC) launch $(BASE) $(INSTANCE)
 
 	# Configuring the LXC instance.
 	$(LXC) file push ./files/setup-systemd.sh $(INSTANCE)/tmp/
