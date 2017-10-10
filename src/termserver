@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+"""The terminal service."""
+
+from tornado import ioloop
+
+from ts import app
+
+
+def main():
+    close = app.start(8765)
+    loop = ioloop.IOLoop.instance()
+    try:
+        loop.start()
+    except KeyboardInterrupt:
+        print('quitting')
+    finally:
+        close()
+        loop.close()
+
+
+if __name__ == '__main__':
+    main()
