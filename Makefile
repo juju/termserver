@@ -3,7 +3,7 @@ LXC=/snap/bin/lxc
 INSTANCE=termserver-$(shell date +'%s')
 IMAGE=termserver.tar.gz
 
-DEBS=python3-pip python3-setuptools python3-tornado python3-wheel
+DEBS=juju-2.0 python3-pip python3-setuptools python3-tornado python3-wheel
 REMOVEDEBS=python3-pip python3-setuptools python3-wheel
 
 default: dev
