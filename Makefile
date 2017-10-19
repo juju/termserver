@@ -76,7 +76,7 @@ devenv/bin/python:
 .PHONY: check
 check: clean image
 	@echo "----------------------------- testing -----------------------------"
-	$(LXC) image import build/$(IMAGE) --alias termserver-image-test
+	$(LXC) image import $(IMAGE) --alias termserver-image-test
 	$(LXC) launch termserver-image-test termserver-test
 	$(LXC) image delete termserver-image-test
 	sleep 10 # Wait for the network to be ready (we can do better than sleep).
