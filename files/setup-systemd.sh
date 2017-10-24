@@ -7,4 +7,5 @@ systemctl -a | awk '{print $1}' | grep \.service | \
     grep -v dbus | \
     grep -v network | \
     grep -v resolvconf | \
+    grep -v termserver | \
     while read line; do systemctl mask ${line}; done
