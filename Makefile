@@ -42,7 +42,7 @@ $(IMAGE): $(LXC)
 	$(LXC) stop $(INSTANCE)
 	$(LXC) publish $(INSTANCE) --alias $(INSTANCE)
 	mkdir -p build
-	$(LXC) image export $(INSTANCE) $(IMAGE)
+	$(LXC) image export $(INSTANCE) $(basename $(basename $(IMAGE)))
 
 # Cleaning up.
 	$(LXC) delete $(INSTANCE)
