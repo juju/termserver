@@ -1,1 +1,13 @@
+#!/bin/bash
+
+# Set up the prompt.
 export PS1="\[\033[01;32m\]\$(juju switch 2> /dev/null || echo '<no controller>')\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
+
+# Start the SSH agent and add the jujushell key if it exists.
+eval `ssh-agent -s` > /dev/null
+for key in ~/.ssh/id_*; do
+    [ -f "$key" ] || continue
+    if grep -q PRIVATE "$key"; then
+        ssh-add "$key" 2> /dev/null
+    fi
+done

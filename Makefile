@@ -4,7 +4,7 @@ INSTANCE=termserver-$(shell date +'%s')
 IMAGE=build/termserver.tar.gz
 USERHOME=/home/ubuntu
 
-DEBS=python3-pip python3-setuptools python3-tornado python3-wheel
+DEBS=jq python3-pip python3-setuptools python3-tornado python3-wheel
 REMOVEDEBS=python3-pip python3-setuptools python3-wheel
 
 default: dev
@@ -39,9 +39,10 @@ $(IMAGE): $(LXC)
 	$(LXC) file push ./files/setup-systemd.sh $(INSTANCE)/tmp/
 	$(LXC) exec $(INSTANCE) /tmp/setup-systemd.sh
 
-# Set up shell customizations, like the prompt, etc.
+# Set up shell customizations, like the prompt, the session manager, etc.
 	$(LXC) file push ./files/jujushellrc $(INSTANCE)$(USERHOME)/.jujushellrc
 	$(LXC) exec $(INSTANCE) -- sh -c "echo '. ~/.jujushellrc' >> $(USERHOME)/.bashrc"
+	$(LXC) file push ./files/session.sh $(INSTANCE)$(USERHOME)/.session
 
 # Save the instance as an image.
 	$(LXC) stop $(INSTANCE)
