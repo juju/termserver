@@ -15,7 +15,8 @@ def start(port):
 
     Return a function that must be used to close the app.
     """
-    term_manager = terminado.UniqueTermManager(shell_command=['bash'])
+    term_manager = terminado.UniqueTermManager(
+        shell_command=['bash'], term_settings={'cwd': '/home/ubuntu'})
     handlers = [
         (r'/status', _StatusHandler),
         (r'/websocket', terminado.TermSocket, {'term_manager': term_manager}),
