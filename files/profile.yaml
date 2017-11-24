@@ -1,0 +1,16 @@
+config:
+  user.user-data: |
+    #cloud-config
+    users:
+      - name: ubuntu
+        shell: /bin/bash
+description: Default LXD profile
+devices:
+  eth0:
+    nictype: bridged
+    parent: lxdbr0
+    type: nic
+  root:
+    path: /
+    pool: default
+    type: disk

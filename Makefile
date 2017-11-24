@@ -3,6 +3,7 @@ LXC=/snap/bin/lxc
 INSTANCE=termserver-$(shell date +'%s')
 IMAGE=build/termserver.tar.gz
 USERHOME=/home/ubuntu
+PROFILE=termserver
 
 DEBS=jq python3-pip python3-setuptools python3-tornado python3-wheel
 REMOVEDEBS=python3-pip python3-setuptools python3-wheel
@@ -14,10 +15,9 @@ $(LXC):
 	snap install lxd
 
 
-$(IMAGE): $(LXC)
+$(IMAGE): $(LXC) profile
 # Start the LXC instance.
-	$(LXC) launch $(BASE) $(INSTANCE)
-
+	$(LXC) launch $(BASE) $(INSTANCE) -p $(PROFILE)
 	sleep 10 # Wait for the network to be ready (we can do better than sleep).
 
 # Configure the LXC instance.
@@ -31,6 +31,7 @@ $(IMAGE): $(LXC)
 	$(LXC) file push ./files/termserver.service $(INSTANCE)/etc/systemd/system/
 	$(LXC) file push -p -r src/* $(INSTANCE)/opt/termserver
 	$(LXC) exec $(INSTANCE) -- systemctl enable termserver
+	$(LXC) exec $(INSTANCE) -- systemctl stop termserver
 
 # Set up juju
 	$(LXC) file push ./files/juju $(INSTANCE)/usr/bin/
@@ -64,9 +65,17 @@ $(IMAGE): $(LXC)
 image: $(IMAGE)
 
 
+.PHONY: profile
+profile:
+	$(LXC) profile delete $(PROFILE) 2> /dev/null || true
+	$(LXC) profile create $(PROFILE)
+	cat files/profile.yaml | $(LXC) profile edit $(PROFILE)
+
+
 .PHONY: clean
 clean:
 	rm -rf build/* devenv
+	$(LXC) profile delete $(PROFILE) 2> /dev/null || true
 
 
 dev: devenv/bin/python
@@ -83,7 +92,7 @@ devenv/bin/python:
 check: clean image
 	@echo "----------------------------- testing -----------------------------"
 	$(LXC) image import $(IMAGE) --alias termserver-image-test
-	$(LXC) launch termserver-image-test termserver-test
+	$(LXC) launch termserver-image-test termserver-test -p $(PROFILE)
 	$(LXC) image delete termserver-image-test
 	sleep 10 # Wait for the network to be ready (we can do better than sleep).
 
