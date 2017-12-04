@@ -3,12 +3,16 @@
 """The terminal service."""
 
 from tornado import ioloop
+from tornado.options import define, options
 
 from ts import app
 
 
 def main():
-    close = app.start(8765)
+    define('port', default=8765, help='the port to use for the server')
+    define('command', default='bash', help='the command to expose')
+    options.parse_command_line()
+    close = app.start(options.port, options.command)
     loop = ioloop.IOLoop.instance()
     try:
         loop.start()
