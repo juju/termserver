@@ -1,7 +1,7 @@
 #!/bin/bash
 
 keyname=jujushell@`hostname`
-keypath=~/.ssh/id_jujushell
+keypath=~/.ssh/id_rsa
 
 # Print usage information and exit with an error.
 usage() {

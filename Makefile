@@ -4,11 +4,19 @@ INSTANCE=termserver-$(shell date +'%s')
 IMAGE=build/termserver.tar.gz
 USERHOME=/home/ubuntu
 PROFILE=termserver
+SERVICE=./files/termserver.service
 
 DEBS=jq python3-pip python3-setuptools python3-tornado python3-wheel
 REMOVEDEBS=python3-pip python3-setuptools python3-wheel
 
-default: dev
+
+ifdef LIMITED
+	DEBS+=lshell
+	SERVICE=./files/termserver-limited.service
+endif
+
+
+default: help
 
 
 $(LXC):
@@ -28,7 +36,7 @@ $(IMAGE): $(LXC) profile
 	$(LXC) exec $(INSTANCE) -- apt autoremove -y
 
 # Set up the internal service.
-	$(LXC) file push ./files/termserver.service $(INSTANCE)/etc/systemd/system/
+	$(LXC) file push $(SERVICE) $(INSTANCE)/etc/systemd/system/termserver.service
 	$(LXC) file push -p -r src/* $(INSTANCE)/opt/termserver
 	$(LXC) exec $(INSTANCE) -- systemctl enable termserver
 	$(LXC) exec $(INSTANCE) -- systemctl stop termserver
@@ -44,6 +52,7 @@ $(IMAGE): $(LXC) profile
 	$(LXC) file push ./files/jujushellrc $(INSTANCE)$(USERHOME)/.jujushellrc
 	$(LXC) exec $(INSTANCE) -- sh -c "echo '. ~/.jujushellrc' >> $(USERHOME)/.bashrc"
 	$(LXC) file push ./files/session.sh $(INSTANCE)$(USERHOME)/.session
+	$(LXC) file push ./files/lshell.conf $(INSTANCE)/etc/lshell.conf
 
 # Save the instance as an image.
 	$(LXC) stop $(INSTANCE)
@@ -100,3 +109,10 @@ check: clean image
 	@echo "delete the instance in case of failure: lxc delete -f termserver-test"
 	./files/check.sh termserver-test
 	$(LXC) delete -f termserver-test
+
+
+.PHONY: help
+help:
+	@echo "make check - generate and test an image"
+	@echo "make check LIMITED=1 - generate an image with a limited shell"
+	@echo "make dev - create a development environment for the tornado app"
