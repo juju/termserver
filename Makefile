@@ -30,6 +30,7 @@ $(IMAGE): $(LXC) profile
 
 # Configure the LXC instance.
 	$(LXC) exec $(INSTANCE) -- apt update
+	$(LXC) exec $(INSTANCE) -- apt upgrade -y
 	$(LXC) exec $(INSTANCE) -- apt install --no-install-recommends -y $(DEBS)
 	$(LXC) exec $(INSTANCE) -- pip3 install terminado
 	$(LXC) exec $(INSTANCE) -- apt remove -y $(REMOVEDEBS)
