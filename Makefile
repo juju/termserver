@@ -1,4 +1,4 @@
-BASE=ubuntu:lts
+BASE=ubuntu:bionic
 LXC=/snap/bin/lxc
 INSTANCE=termserver-$(shell date +'%s')
 IMAGE=build/termserver.tar.gz
