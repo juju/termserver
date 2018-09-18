@@ -45,6 +45,9 @@ $(IMAGE): $(LXC) profile
 # Set up juju
 	$(LXC) file push ./files/juju $(INSTANCE)/usr/bin/
 
+# Set up kubectl
+	$(LXC) exec $(INSTANCE) -- snap install kubectl --classic
+
 # Disable unnecessary services.
 	$(LXC) file push ./files/setup-systemd.sh $(INSTANCE)/tmp/
 	$(LXC) exec $(INSTANCE) /tmp/setup-systemd.sh
