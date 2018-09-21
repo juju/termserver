@@ -1,5 +1,5 @@
 #!/bin/bash
 mkdir -p ~/.kube
 k8smaster=$(juju status --format=json | jq '.applications["kubernetes-master"].units | keys[0] -r')
-juju scp $k8smaster}:~/config ~/.kube/config
+juju scp $k8smaster:~/config ~/.kube/config
 

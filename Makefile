@@ -46,9 +46,13 @@ $(IMAGE): $(LXC) profile
 # Set up juju
 	$(LXC) file push ./files/juju $(INSTANCE)/usr/bin/
 
-# Set up kubectl and postdeploy coonfig
+# Set up kubectl
 	$(LXC) exec $(INSTANCE) -- snap install kubectl --classic
-	$(LXC) file push ./files/k8s-postdeploy $(INSTANCE)$(USERHOME)/postdeploy
+
+# Set up postdeploy options
+	$(LXC) exec $(INSTANCE) -- mkdir -p /home/ubuntu/bin
+	$(LXC) exec $(INSTANCE) -- sh -c "echo 'PATH=$$PATH:/home/ubuntu/bin' >> $(USERHOME)/.bashrc"
+	$(LXC) file push ./files/k8s-postdeploy $(INSTANCE)$(USERHOME)/bin/postdeploy
 
 # Disable unnecessary services.
 	$(LXC) file push ./files/setup-systemd.sh $(INSTANCE)/tmp/
