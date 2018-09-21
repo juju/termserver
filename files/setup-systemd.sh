@@ -8,4 +8,5 @@ systemctl -a | awk '{print $1}' | grep \.service | \
     grep -v network | \
     grep -v resolvconf | \
     grep -v termserver | \
+    grep -v systemd | \
     while read line; do systemctl mask ${line}; done
