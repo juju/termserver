@@ -51,7 +51,7 @@ $(IMAGE): $(LXC) profile
 
 # Set up postdeploy options
 	$(LXC) exec $(INSTANCE) -- mkdir -p /home/ubuntu/bin
-	$(LXC) exec $(INSTACE) -- sh -c "echo 'PATH=$PATH:/home/ubuntu/bin' >> $(USERHOME)/.bashrc"
+	$(LXC) exec $(INSTANCE) -- sh -c "echo 'PATH=$$PATH:/home/ubuntu/bin' >> $(USERHOME)/.bashrc"
 	$(LXC) file push ./files/k8s-postdeploy $(INSTANCE)$(USERHOME)/bin/postdeploy
 
 # Disable unnecessary services.
