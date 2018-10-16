@@ -51,8 +51,8 @@ $(IMAGE): $(LXC) profile
 
 # Set up postdeploy options
 	$(LXC) exec $(INSTANCE) -- mkdir -p /home/ubuntu/bin
-	$(LXC) exec $(INSTANCE) -- sh -c "echo 'PATH=$$PATH:/home/ubuntu/bin' >> $(USERHOME)/.bashrc"
-	$(LXC) file push ./files/k8s-postdeploy $(INSTANCE)$(USERHOME)/bin/postdeploy
+	$(LXC) exec $(INSTANCE) -- sh -c "echo 'PATH=$$PATH:/home/ubuntu/bin:/snap/bin' >> $(USERHOME)/.bashrc"
+	$(LXC) file push ./files/k8s-postdeploy $(INSTANCE)$(USERHOME)/bin/k8s-postdeploy
 
 # Disable unnecessary services.
 	$(LXC) file push ./files/setup-systemd.sh $(INSTANCE)/tmp/
