@@ -1,0 +1,23 @@
+#!/bin/bash
+
+status=$(juju status --format=json)
+k8smaster=$(echo "$status" | jq '.applications["kubernetes-master"].units | keys[0]' -r)
+cloud=$(echo "$status" | jq '.model.cloud' -r)
+integrator=$(echo "$status" | jq '.applications["aws-integrator"]' -r)
+
+mkdir -p ~/.kube
+
+juju scp "$k8smaster":~/config ~/.kube/config
+echo 'kubectl config copied from kubernetes-master'
+
+if [ "$cloud" = "aws" ]; then
+    if [ "$integrator" = "null" ]; then
+        echo 'deploying aws-integrator'
+        juju deploy cs:~containers/aws-integrator
+        juju add-relation aws-integrator kubernetes-master
+        juju add-relation aws-integrator kubernetes-worker
+        juju trust aws-integrator
+    else
+        echo 'aws-integrator already deployed'
+    fi
+fi
