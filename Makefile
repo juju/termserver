@@ -13,6 +13,7 @@ REMOVEDEBS=python3-pip python3-setuptools python3-wheel
 ifdef LIMITED
 	DEBS+=lshell
 	SERVICE=./files/termserver-limited.service
+	BASE=ubuntu:xenial
 endif
 
 
@@ -47,6 +48,11 @@ $(IMAGE): $(LXC) profile
 
 # Set up kubectl
 	$(LXC) exec $(INSTANCE) -- snap install kubectl --classic
+
+# Set up postdeploy options
+	$(LXC) exec $(INSTANCE) -- mkdir -p /home/ubuntu/bin
+	$(LXC) exec $(INSTANCE) -- sh -c "echo 'PATH=$$PATH:/home/ubuntu/bin' >> $(USERHOME)/.bashrc"
+	$(LXC) file push ./files/k8s-postdeploy $(INSTANCE)$(USERHOME)/bin/postdeploy
 
 # Disable unnecessary services.
 	$(LXC) file push ./files/setup-systemd.sh $(INSTANCE)/tmp/

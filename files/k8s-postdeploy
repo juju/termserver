@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function aws_setup {
+    integrator=$(juju status --format=json | jq '.applications["aws-integrator"]' -r)
+    if [ $integrator = "null" ]; then
+        echo 'deploying aws-integrator'
+        juju deploy cs:~containers/aws-integrator
+    else
+        echo 'aws-integrator already deployed'
+    fi
+    juju add-relation aws-integrator kubernetes-master
+    juju add-relation aws-integrator kubernetes-worker
+    juju trust aws-integrator
+}
+
+function setup_kubectl {
+    mkdir -p ~/.kube
+    k8smaster=$(juju status --format=json | jq '.applications["kubernetes-master"].units | keys[0]' -r)
+    juju scp $k8smaster:~/config ~/.kube/config
+    echo 'kubectl config copied from kubernetes-master'
+}
+
+cloud=$(juju status --format=json | jq '.model.cloud' -r)
+
+
+setup_kubectl
+if [ $cloud = "aws" ]; then
+    aws_setup
+fi
